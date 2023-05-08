@@ -1,0 +1,257 @@
+<html>
+<head>
+    <title>Server Filter</title>
+</head>
+<body>
+<form action="" method="GET" id="form">
+    <fieldset>
+        <label for="storage">Storage</label>
+        <input type="hidden" name="storage">
+        <input type="range" id="storage-range" min="0" max="11" value="0" step="1">
+        <span id="active-storage"></span>
+    </fieldset>
+    <fieldset>
+        <label>RAM</label>
+        <div class="check-list">
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="2GB">
+                <label for="ram">2GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="4GB">
+                <label for="ram">4GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="8GB">
+                <label for="ram">8GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="12GB">
+                <label for="ram">12GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="16GB">
+                <label for="ram">16GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="24GB">
+                <label for="ram">24GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="32GB">
+                <label for="ram">32GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="48GB">
+                <label for="ram">48GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="64GB">
+                <label for="ram">64GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="96GB">
+                <label for="ram">96GB</label>
+            </div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <label for="hdd">HDD Type</label>
+        <select name="hddType" id="hddType" placeholder="Please select HDD type">
+            <option value="SAS">SAS</option>
+            <option value="SATA">SATA</option>
+            <option value="HDD">HDD</option>
+        </select>
+    </fieldset>
+    <fieldset>
+        <label for="location">Location</label>
+        <select name="location" id="location" placeholder="Please select location">
+            <option value="AmsterdamAMS-01">AmsterdamAMS-01</option>
+            <option value="Washington D.C.WDC-01">Washington D.C.WDC-01</option>
+            <option value="San FranciscoSFO-12">San FranciscoSFO-12</option>
+            <option value="SingaporeSIN-11">SingaporeSIN-11</option>
+            <option value="Hong KongHKG-10">Hong KongHKG-10</option>
+            <option value="FrankfurtFRA-10">FrankfurtFRA-10</option>
+            <option value="FrankfurtFRA-10">DallasDAL-10</option>
+        </select>
+    </fieldset>
+    <button type="submit">SUBMIT</button>
+</form>
+
+
+<div id="response">
+    <h2 id="result-title">Result (0 Products)</h2>
+    <table cellpadding="0" cellspacing="0">
+        <thead>
+        <tr>
+            <th>Model</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+        <tbody id="server-table-body">
+        </tbody>
+    </table>
+
+</div>
+
+
+<style>
+    body {
+        font-family: Arial;
+        font-size: 14px;
+        padding-bottom: 100px;
+    }
+
+    #form {
+        border: 1px solid #cecece;
+        padding: 16px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 500px;
+        margin: 30px auto;
+    }
+
+    #form fieldset {
+        padding: 16px 10px;
+        border: 0;
+        border-bottom: 1px solid #cecece;
+    }
+
+    #form fieldset > label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    #form select {
+        padding: 5px;
+        min-width: 200px;
+        border: 1px solid black;
+    }
+
+    #form button {
+        padding: 10px;
+        background: black;
+        color: white;
+        border: 0;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 16px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    #form #active-storage {
+        font-weight: bold;
+        margin-top: 10px;
+        display: block;
+    }
+
+    #response {
+        width: 90%;
+        max-width: 500px;
+        display: block;
+        margin: 0 auto;
+        margin-top: 50px;
+        padding-top: 50px;
+        border-top: 1px solid #cecece;
+    }
+
+    #response h2 {
+        text-align: center;
+    }
+
+    #response table {
+        text-align: left;
+        width: 100%;
+    }
+
+    #response table th, #response table td {
+        padding: 16px 10px;
+        border-bottom: 1px solid #cecece;
+    }
+
+    #response table td:last-child, #response table th:last-child {
+        text-align: right;
+    }
+
+    #response table tr:nth-child(odd) td {
+        background: #f5f4f4;
+    }
+</style>
+
+<script>
+    const storages = ["0", "250GB", "500GB", "1TB", "2TB", "3TB", "4TB", "8TB", "12TB", "24TB", "48TB", "72TB"];
+
+
+    document.querySelector("#active-storage").innerText = storages[0];
+    document.querySelector("[name='storage']").value = storages[0];
+
+    document.querySelector("#storage-range").addEventListener("input", (e) => {
+        let val = storages[e.target.value];
+        document.querySelector("#active-storage").innerText = val;
+        document.querySelector("[name='storage']").value = val;
+    })
+
+    document.querySelector('#form').addEventListener('submit', e => {
+        e.preventDefault();
+
+        var storageValIndex = document.querySelector("#storage-range").value;
+        var storageVal = storages[storageValIndex];
+        const selectedRamValues = [];
+
+        const checkboxes = document.querySelectorAll('input[name="ram[]"]');
+
+        checkboxes.forEach((checkbox) => {
+            if (checkbox.checked) {
+                selectedRamValues.push(checkbox.value);
+            }
+        });
+        var ramVal = selectedRamValues.join(',');
+        var hddTypeVal = document.querySelector("#hddType").value;
+        var locationVal = document.querySelector("#location").value;
+
+        const params = { storage: storageVal, ram: ramVal, hddType: hddTypeVal, location: locationVal };
+        const queryString = new URLSearchParams(params).toString();
+
+        const xhr = new XMLHttpRequest();
+        const url = '{{ path('api_server_index') }}?' + queryString;
+
+        xhr.open('GET', url);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                const resp = JSON.parse(xhr.responseText);
+                if (resp.status) {
+                    var serverTableBody = document.querySelector("#server-table-body");
+                    serverTableBody.innerHTML = "";
+                    document.getElementById("result-title").innerText = "Result (" + resp.data.length + " Servers)";
+                    for (var k in resp.data) {
+                        const row = document.createElement('tr');
+                        const modelCell = document.createElement('td');
+                        const priceCell = document.createElement('td');
+                        modelCell.textContent = resp.data[k].model;
+                        priceCell.textContent = resp.data[k].price;
+                        row.appendChild(modelCell);
+                        row.appendChild(priceCell);
+                        serverTableBody.appendChild(row);
+                    }
+                } else {
+                    console.error('Error:', resp.message);
+                }
+            } else {
+                console.error('Error:', xhr.statusText);
+            }
+        };
+
+        xhr.onerror = function () {
+            console.error('Network error');
+        };
+
+        xhr.send();
+    });
+
+</script>
+</body>
+</html>

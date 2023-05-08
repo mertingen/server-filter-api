@@ -22,3 +22,15 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\EventListener\RequestListener:
+        tags:
+            - { name: kernel.event_subscriber }
+
+    Redis:
+        # you can also use \RedisArray, \RedisCluster or \Predis\Client classes
+        class: Redis
+        calls:
+            - connect:
+                 - '%env(REDIS_HOST)%'
+                 - '%env(int:REDIS_PORT)%'

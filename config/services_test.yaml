@@ -1,0 +1,5 @@
+services:
+  App\Service\ServerService:
+    public: true
+    arguments:
+      [ '@App\Repository\ServerRepository' ]
