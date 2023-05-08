@@ -104,8 +104,7 @@ class ServerTest extends KernelTestCase
     {
         $value = [
             'ram' => '32GB',
-            'minStorage' => '1TB',
-            'maxStorage' => '2TB',
+            'storage' => '1TB',
             'hddType' => 'SATA',
             'location' => 'Hong KongHKG-10'
         ];
@@ -116,8 +115,7 @@ class ServerTest extends KernelTestCase
         $expectedResult = [
             'status' => true,
             'data' => [
-                'minStorage' => 1073741824,
-                'maxStorage' => 2147483648,
+                'storage' => 1073741824,
                 'hddType' => 'SATA',
                 'location' => 'Hong KongHKG-10',
                 'ramValues' => [33554432]
