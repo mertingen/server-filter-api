@@ -253,6 +253,7 @@ class ServerService
 
             // Check valid HDD types by enum
             if (isset($filterParams['hddType'])) {
+                dd($filterParams);
                 if (!HddType::tryFrom($filterParams['hddType'])) {
                     return [
                         'status' => false,
