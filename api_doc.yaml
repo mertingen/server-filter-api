@@ -16,7 +16,7 @@ paths:
       tags:
         - servers
       summary: Finds servers by filter
-      description: "Filter server information according to the filter params. \n\nExample: /api/servers?**location**=FrankfurtFRA-10&**ram**=64GB&**hddType**=SATA&**storage**=4GB"
+      description: "Filter server information according to the filter params. \n\nExample: /api/servers?**location**=FrankfurtFRA-10&**ram**=16GB&**hddType**=SATA&**storage**=4TB"
       operationId: findServersByFilter
       parameters:
         - name: location
