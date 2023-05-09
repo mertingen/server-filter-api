@@ -7,7 +7,7 @@
     <fieldset>
         <label for="storage">Storage</label>
         <input type="hidden" name="storage">
-        <input type="range" id="storage-range" min="0" max="11" value="0" step="1">
+        <input type="range" id="storage-range" min="0" max="13" value="0" step="1">
         <span id="active-storage"></span>
     </fieldset>
     <fieldset>
@@ -52,6 +52,10 @@
             <div class="check-list__item">
                 <input type="checkbox" name="ram[]" value="96GB">
                 <label for="ram">96GB</label>
+            </div>
+            <div class="check-list__item">
+                <input type="checkbox" name="ram[]" value="128GB">
+                <label for="ram">128GB</label>
             </div>
         </div>
     </fieldset>
@@ -181,7 +185,7 @@
 </style>
 
 <script>
-    const storages = ["0", "250GB", "500GB", "1TB", "2TB", "3TB", "4TB", "8TB", "12TB", "24TB", "48TB", "72TB"];
+    const storages = ["0", "120GB", "240GB", "250GB", "500GB", "1TB", "2TB", "3TB", "4TB", "8TB", "12TB", "24TB", "48TB", "72TB"];
 
 
     document.querySelector("#active-storage").innerText = storages[0];

@@ -174,7 +174,10 @@ class ServerService
             return null;
         }
 
-        return $number * (1024 ** $exponent);
+        $result = $number * (1024 ** $exponent);
+
+        //1 TB multiply with 1024 but if value is 1000GB it's multiply with 1000
+        return ($suffix == SizeUnit::TB->name) ? ($result / 1024) * 1000 : $result;
     }
 
     /**
