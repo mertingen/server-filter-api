@@ -2,10 +2,13 @@
 
 namespace App\Controller\Api;
 
+use App\Enum\HddType;
+use App\Enum\SizeUnit;
 use App\Service\ServerService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_server')]
@@ -21,41 +24,50 @@ class ServerController extends AbstractController
                 'hddType' => $request->query->get('hddType'),
                 'location' => $request->query->get('location')
             ];
+            // Check valid HDD types by enum
+            if (isset($filterParams['hddType'])) {
+                if (!HddType::tryFrom($filterParams['hddType'])) {
+                    return $this->json(
+                        [
+                            'status' => false,
+                            'data' => [],
+                            'message' => '',
+                        ],
+                        Response::HTTP_BAD_REQUEST,
+                    );
+                }
+            }
 
             $filterParams = $serverService->getFormattedFilterParams($filterParams);
 
-            if ($filterParams['status']) {
-                $servers = $serverService->getAll($filterParams['data']);
-                if ($servers['status']) {
-                    $response = [
-                        'status' => true,
-                        'data' => $servers['data'],
-                        'message' => '',
-                    ];
-                } else {
-                    $response = [
+            $servers = $serverService->getAll($filterParams);
+            if (empty($servers)) {
+                return $this->json(
+                    [
                         'status' => false,
                         'data' => [],
-                        'message' => $servers['message'],
-                    ];
-                }
-
-            } else {
-                $response = [
-                    'status' => false,
-                    'data' => [],
-                    'message' => $filterParams['message'],
-                ];
+                        'message' => 'Servers cannot be found!',
+                    ],
+                    Response::HTTP_OK,
+                );
             }
 
-            return $this->json($response);
+            return $this->json(
+                [
+                    'status' => true,
+                    'data' => $servers,
+                    'message' => '',
+                ],
+                Response::HTTP_OK,
+            );
         } catch (\Exception $e) {
             return $this->json(
                 [
                     'status' => false,
                     'data' => [],
                     'message' => $e->getMessage(),
-                ]
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR,
             );
         }
 

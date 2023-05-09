@@ -113,14 +113,10 @@ class ServerTest extends KernelTestCase
 
         // Define the expected result array
         $expectedResult = [
-            'status' => true,
-            'data' => [
-                'storage' => 1073741824,
-                'hddType' => 'SATA',
-                'location' => 'Hong KongHKG-10',
-                'ramValues' => [33554432]
-            ],
-            'message' => '',
+            'storage' => 1073741824,
+            'hddType' => 'SATA',
+            'location' => 'Hong KongHKG-10',
+            'ramValues' => [33554432]
         ];
 
         // Assert that the result array is the same as the expected array

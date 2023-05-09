@@ -21,50 +21,19 @@ class ServerService
      */
     public function getAll(array $filterParams): array
     {
-        try {
-            if (count($filterParams) < 1) {
-                $servers = $this->serverRepository->findAll();
-                if (!empty($servers)) {
-                    return [
-                        'status' => true,
-                        'data' => $servers,
-                        'message' => '',
-                    ];
-                } else {
-                    return [
-                        'status' => true,
-                        'data' => [],
-                        'message' => 'Servers cannot be found!',
-                    ];
-                }
-            } else {
-                $servers = $this->serverRepository->findByFilter($filterParams);
-                if (!empty($servers)) {
-                    return [
-                        'status' => true,
-                        'data' => $servers,
-                        'message' => '',
-                    ];
-                } else {
-                    return [
-                        'status' => true,
-                        'data' => [],
-                        'message' => 'Servers cannot be found!',
-                    ];
-                }
-            }
-        } catch (\Exception $e) {
-            return [
-                'status' => true,
-                'data' => [],
-                'message' => $e->getMessage(),
-            ];
+        if (count($filterParams) < 1) {
+            return $this->serverRepository->findAll();
+        } else {
+            return $this->serverRepository->findByFilter($filterParams);
         }
     }
 
     /**
      * @param string $ramInfo
      * @return array
+     *
+     * Return Ram values as byte format
+     * Example:
      */
     public function getRamInfo(string $ramInfo): array
     {
@@ -205,79 +174,6 @@ class ServerService
     }
 
     /**
-     * @param array $filterParams
-     * @return array
-     *
-     *  the query string params from ServerController.php and prepare them for filtering
-     */
-    public function getFormattedFilterParams(array $filterParams): array
-    {
-        try {
-            // Remove empty query string values from array
-            foreach ($filterParams as $field => $filterParam) {
-                if (empty($filterParam)) {
-                    unset($filterParams[$field]);
-                }
-                if (is_numeric($filterParams)) {
-                    if ($filterParams < 1) {
-                        unset($filterParams[$field]);
-                    }
-                }
-            }
-
-            // Format Ram values as multiple choices
-            if (isset($filterParams['ram'])) {
-                $ramValues = explode(',', $filterParams['ram']);
-                unset($filterParams['ram']);
-                foreach ($ramValues as $ramValue) {
-                    // Find actual size unit and convert the Ram value to byte value to query in DB
-                    foreach (SizeUnit::cases() as $unit) {
-                        if (str_contains($ramValue, $unit->name)) {
-                            $ramData = explode($unit->name, $ramValue);
-                            $filterParams['ramValues'][] = $this->convertToBytes($ramData[0] . $unit->name);
-                        }
-                    }
-                }
-            }
-
-            // Format storage values to query between condition in DB
-            if (isset($filterParams['storage'])) {
-                foreach (SizeUnit::cases() as $unit) {
-                    // Find actual size unit and convert the Storage value to byte value to query in DB
-                    if (str_contains($filterParams['storage'], $unit->name)) {
-                        $storageData = explode($unit->name, $filterParams['storage']);
-                        $filterParams['storage'] = $this->convertToBytes($storageData[0] . $unit->name);
-                    }
-                }
-            }
-
-            // Check valid HDD types by enum
-            if (isset($filterParams['hddType'])) {
-                if (!HddType::tryFrom($filterParams['hddType'])) {
-                    return [
-                        'status' => false,
-                        'data' => [],
-                        'message' => 'Hdd type is not valid!',
-                    ];
-                }
-            }
-
-            return [
-                'status' => true,
-                'data' => $filterParams,
-                'message' => '',
-            ];
-        } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'data' => [],
-                'message' => $e->getMessage(),
-            ];
-        }
-
-    }
-
-    /**
      * @param string $from
      * @return int|null
      *
@@ -301,6 +197,55 @@ class ServerService
         }
 
         return $number * (1024 ** $exponent);
+    }
+
+    /**
+     * @param array $filterParams
+     * @return array
+     *
+     *  the query string params from ServerController.php and prepare them for filtering
+     */
+    public function getFormattedFilterParams(array $filterParams): array
+    {
+        // Remove empty query string values from array
+        foreach ($filterParams as $field => $filterParam) {
+            if (empty($filterParam)) {
+                unset($filterParams[$field]);
+            }
+            if (is_numeric($filterParams)) {
+                if ($filterParams < 1) {
+                    unset($filterParams[$field]);
+                }
+            }
+        }
+
+        // Format Ram values as multiple choices
+        if (isset($filterParams['ram'])) {
+            $ramValues = explode(',', $filterParams['ram']);
+            unset($filterParams['ram']);
+            foreach ($ramValues as $ramValue) {
+                // Find actual size unit and convert the Ram value to byte value to query in DB
+                foreach (SizeUnit::cases() as $unit) {
+                    if (str_contains($ramValue, $unit->name)) {
+                        $ramData = explode($unit->name, $ramValue);
+                        $filterParams['ramValues'][] = $this->convertToBytes($ramData[0] . $unit->name);
+                    }
+                }
+            }
+        }
+
+        // Format storage values to query between condition in DB
+        if (isset($filterParams['storage'])) {
+            foreach (SizeUnit::cases() as $unit) {
+                // Find actual size unit and convert the Storage value to byte value to query in DB
+                if (str_contains($filterParams['storage'], $unit->name)) {
+                    $storageData = explode($unit->name, $filterParams['storage']);
+                    $filterParams['storage'] = $this->convertToBytes($storageData[0] . $unit->name);
+                }
+            }
+        }
+
+        return $filterParams;
     }
 
 
