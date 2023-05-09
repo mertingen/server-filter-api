@@ -8,7 +8,7 @@ The project has a UI that you can filter the server machines according to the re
 - Symfony Framework 6.2
 
 ### Warm-up
-There is **.env.sample** in the root directory, you should create **.env** file next to it and fulfill these variable to initialize the app.
+There is **.env.sample** in the root directory, you should create **.env** file next to it and fulfill these variable to initialize the app. **.env.sample** file has sample value for related params.
 
 - APP_ENV=
 - APP_SECRET=
