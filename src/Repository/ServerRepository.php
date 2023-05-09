@@ -67,6 +67,8 @@ class ServerRepository extends ServiceEntityRepository
                 ->setParameter('storage', $filterParams['storage']);
         }
 
+        $qb->orderBy('s.price', 'ASC');
+
         return $qb->getQuery()->getResult();
     }
 
