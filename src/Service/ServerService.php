@@ -37,42 +37,34 @@ class ServerService
      */
     public function getRamInfo(string $ramInfo): array
     {
-        try {
-            foreach (SizeUnit::cases() as $unit) {
-                if (str_contains($ramInfo, $unit->name)) {
-                    $ramData = explode($unit->name, $ramInfo);
-                    if (!is_numeric($ramData[0])) {
-                        return [
-                            'status' => false,
-                            'data' => [],
-                            'message' => 'Ram info data is not valid!'
-                        ];
-                    }
+        foreach (SizeUnit::cases() as $unit) {
+            if (str_contains($ramInfo, $unit->name)) {
+                $ramData = explode($unit->name, $ramInfo);
+                if (!is_numeric($ramData[0])) {
                     return [
-                        'status' => true,
-                        'data' => [
-                            'size' => $ramData[0],
-                            'actualSize' => $this->convertToBytes($ramData[0] . $unit->name),
-                            'sizeType' => $unit->name,
-                            'type' => $ramData[1],
-                        ],
-                        'message' => '',
+                        'status' => false,
+                        'data' => [],
+                        'message' => 'Ram info data is not valid!'
                     ];
                 }
+                return [
+                    'status' => true,
+                    'data' => [
+                        'size' => $ramData[0],
+                        'actualSize' => $this->convertToBytes($ramData[0] . $unit->name),
+                        'sizeType' => $unit->name,
+                        'type' => $ramData[1],
+                    ],
+                    'message' => '',
+                ];
             }
-
-            return [
-                'status' => false,
-                'data' => [],
-                'message' => 'Ram info data is not valid!'
-            ];
-        } catch (\Exception $e) {
-            return [
-                'status' => false,
-                'data' => [],
-                'message' => $e->getMessage(),
-            ];
         }
+
+        return [
+            'status' => false,
+            'data' => [],
+            'message' => 'Ram info data is not valid!'
+        ];
     }
 
     /**
@@ -81,59 +73,52 @@ class ServerService
      */
     public function getHddInfo(string $hddInfo): array
     {
-        try {
-            $hddInfoData = [];
-            $hddInfo = explode('x', $hddInfo);
-            $hddInfoData['count'] = $hddInfo[0];
+        $hddInfoData = [];
+        $hddInfo = explode('x', $hddInfo);
+        $hddInfoData['count'] = $hddInfo[0];
 
-            $actualUnit = '';
-            foreach (HddType::cases() as $hddType) {
-                if (str_contains($hddInfo[1], $hddType->name)) {
-                    $hddInfoData['type'] = $hddType->name;
-                }
+        $actualUnit = '';
+        foreach (HddType::cases() as $hddType) {
+            if (str_contains($hddInfo[1], $hddType->name)) {
+                $hddInfoData['type'] = $hddType->name;
             }
-            foreach (SizeUnit::cases() as $unit) {
-                if (str_contains($hddInfo[1], $unit->name)) {
-                    $actualUnit = $unit->name;
-                    $hddInfoData['sizeType'] = $unit->name;
-                }
+        }
+        foreach (SizeUnit::cases() as $unit) {
+            if (str_contains($hddInfo[1], $unit->name)) {
+                $actualUnit = $unit->name;
+                $hddInfoData['sizeType'] = $unit->name;
             }
+        }
 
-            if (empty($hddInfoData['type'])) {
-                return [
-                    'status' => false,
-                    'data' => [],
-                    'message' => 'Hdd info data is not valid!'
-                ];
-            }
-            if (empty($hddInfoData['sizeType'])) {
-                return [
-                    'status' => false,
-                    'data' => [],
-                    'message' => 'Hdd info data is not valid!'
-                ];
-            }
-
-            $sizeInfo = explode($actualUnit, $hddInfo[1]);
-            $hddInfoData['size'] = $sizeInfo[0];
-            $totalSize = $hddInfo[0] * $sizeInfo[0];
-            $hddInfoData['totalSize'] = $totalSize;
-
-            $actualSize = $this->convertToBytes($totalSize . $hddInfoData['sizeType']);
-            $hddInfoData['actualSize'] = $actualSize;
-
-            return [
-                'status' => true,
-                'data' => $hddInfoData,
-                'message' => ''
-            ];
-        } catch (\Exception $e) {
+        if (empty($hddInfoData['type'])) {
             return [
                 'status' => false,
                 'data' => [],
-                'message' => $e->getMessage(),
+                'message' => 'Hdd info data is not valid!'
             ];
         }
+        if (empty($hddInfoData['sizeType'])) {
+            return [
+                'status' => false,
+                'data' => [],
+                'message' => 'Hdd info data is not valid!'
+            ];
+        }
+
+        $sizeInfo = explode($actualUnit, $hddInfo[1]);
+        $hddInfoData['size'] = $sizeInfo[0];
+        $totalSize = $hddInfo[0] * $sizeInfo[0];
+        $hddInfoData['totalSize'] = $totalSize;
+
+        $actualSize = $this->convertToBytes($totalSize . $hddInfoData['sizeType']);
+        $hddInfoData['actualSize'] = $actualSize;
+
+        return [
+            'status' => true,
+            'data' => $hddInfoData,
+            'message' => ''
+        ];
+
     }
 
     /**
@@ -142,35 +127,28 @@ class ServerService
      */
     public function getCurrencyInfo(string $currencyInfo): array
     {
-        try {
-            // Fix a type in server list file
-            $currencyInfo = str_replace("S", "", $currencyInfo);
+        // Fix a type in server list file
+        $currencyInfo = str_replace("S", "", $currencyInfo);
 
-            $currencySymbol = mb_substr($currencyInfo, 0, 1);
-            // Continue if it's not valid currency
-            if (!Currency::tryFrom($currencySymbol)) {
-                return [
-                    'status' => false,
-                    'data' => [],
-                    'message' => 'Currency data is not valid!',
-                ];
-            }
-            $currencyData = explode($currencySymbol, $currencyInfo);
-            return [
-                'status' => true,
-                'data' => [
-                    'price' => $currencyData[1],
-                    'currency' => Currency::tryFrom($currencySymbol)->name,
-                ],
-                'message' => '',
-            ];
-        } catch (\Exception $e) {
+        $currencySymbol = mb_substr($currencyInfo, 0, 1);
+        // Continue if it's not valid currency
+        if (!Currency::tryFrom($currencySymbol)) {
             return [
                 'status' => false,
                 'data' => [],
-                'message' => $e->getMessage(),
+                'message' => 'Currency data is not valid!',
             ];
         }
+        $currencyData = explode($currencySymbol, $currencyInfo);
+        return [
+            'status' => true,
+            'data' => [
+                'price' => $currencyData[1],
+                'currency' => Currency::tryFrom($currencySymbol)->name,
+            ],
+            'message' => '',
+        ];
+
     }
 
     /**
