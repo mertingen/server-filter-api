@@ -1,0 +1,145 @@
+openapi: 3.1.0
+info:
+  title: Server Filter API
+  description: |-
+    The project has a UI that you can filter the server machines according to the resources. You'll see the machine models and their prices. The UI requests the filter API in the same project. When API endpoints are requested their response will be cached into the Redis. The key will be filter query string. If the filter API gets the same request it provides the data from cache. Thus, we don't consume DB a lot and reduce the response time.
+
+    ### Check out its awesome features:
+
+    * The idea is to have a REST API that is capable of listing servers with the possibility of reduce the list using the filters, to narrow the list. 😎
+    * Display the list of servers and then implement the filter functionalities 📈
+  version: 1.0.11
+paths:
+  /api:
+  /servers:
+    get:
+      tags:
+        - servers
+      summary: Finds servers by filter
+      description: "Filter server information according to the filter params. \n\nExample: /api/servers?**location**=FrankfurtFRA-10&**ram**=64GB&**hddType**=SATA&**storage**=4GB"
+      operationId: findServersByFilter
+      parameters:
+        - name: location
+          in: query
+          description: Location of server zones
+          required: false
+          explode: false
+          schema:
+            type: string
+            enum:
+              - AmsterdamAMS-01
+              - Washington D.C.WDC-01
+              - San FranciscoSFO-12
+              - SingaporeSIN-11
+              - Hong KongHKG-10
+              - FrankfurtFRA-10
+              - DallasDAL-10
+        - name: ram
+          in: query
+          description: Ram values for the server
+          required: false
+          explode: true
+          schema:
+            type: string
+            enum:
+              - 2GB
+              - 4GB
+              - 8GB
+              - 12GB
+              - 16GB
+              - 24GB
+              - 32GB
+              - 48GB
+              - 64GB
+              - 96GB
+        - name: storage
+          in: query
+          description: Storage value for the server
+          required: false
+          explode: false
+          schema:
+            type: string
+            enum:
+              - 250GB
+              - 500GB
+              - 1TB
+              - 2TB
+              - 3TB
+              - 4TB
+              - 8TB
+              - 12TB
+              - 24TB
+              - 48TB
+              - 72TB
+        - name: hddType
+          in: query
+          description: HDD Type value for the server
+          required: false
+          explode: false
+          schema:
+            type: string
+            enum:
+              - SAS
+              - SATA
+              - SSD
+      responses:
+        '200':
+          description: List the servers according to the location
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SuccessServerResponse'
+        '400':
+          description: Get bad request response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BadRequestServerResponse'
+components:
+  schemas:
+    SuccessServerResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              model:
+                type: string
+              price:
+                type: string
+        message:
+          type: string
+      example:
+        status: true
+        data:
+          - model: "Dell R210-IIIntel Xeon E3-1220"
+            price: "€59.99"
+        message: ""
+    BadRequestServerResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              model:
+                type: string
+              price:
+                type: string
+        message:
+          type: string
+      example:
+        status: false
+        data: []
+        message: "Hdd type is not valid"
